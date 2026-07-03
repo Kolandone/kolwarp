@@ -67,7 +67,12 @@ ARCHIVE="${BINARY}-${OS_LOWER}-${ARCH}.${EXT}"
 # Check if already installed
 if [ -x "./${BINARY}" ]; then
     echo -e "${GREEN}kolwarp is already installed. Running...${NC}"
-    exec ./"${BINARY}"
+    # FIXED: Check if Linux to run the specific bash curl command
+    if [ "$OS_LOWER" = "linux" ]; then
+        exec bash <(curl -fsSL https://raw.githubusercontent.com/Kolandone/kolwarp/refs/heads/main/kolwarp.sh)
+    else
+        exec ./"${BINARY}"
+    fi
 else
     echo -e "${CYAN}Installing kolwarp...${NC}"
 fi
@@ -111,4 +116,9 @@ chmod +x "./${BINARY}"
 echo -e "\n${GREEN}✓ kolwarp installed successfully!${NC}\n"
 echo -e "${CYAN}Running kolwarp...${NC}\n"
 
-exec ./"${BINARY}"
+# FIXED: Check if Linux to run the specific bash curl command after installation
+if [ "$OS_LOWER" = "linux" ]; then
+    exec bash <(curl -fsSL https://raw.githubusercontent.com/Kolandone/kolwarp/refs/heads/main/kolwarp.sh)
+else
+    exec ./"${BINARY}"
+fi
