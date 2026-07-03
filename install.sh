@@ -17,14 +17,13 @@ NC='\033[0m'
 
 echo -e "${CYAN}"
 cat << 'EOF'
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                   kolwarp Installer                   ║
-    ║                      Version 1.0.0                        ║
-    ╚═══════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════╗
+║                   kolwarp Installer                       ║
+║                      Version 1.0.0                        ║
+╚═══════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"
-
-echo -e "  ${MAGENTA}Telegram: @kolandjs1${NC}  |  ${CYAN}GitHub: github.com/kolandone${NC}\n"
+echo -e "  ${MAGENTA}Telegram: @kolandjs1${NC} | ${CYAN}GitHub: github.com/kolandone${NC}\n"
 
 # Detect OS
 OS=$(uname -s)
@@ -38,20 +37,19 @@ OS_LOWER=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
 
 # Detect architecture
 ARCH=$(uname -m)
-
 if [ "$OS_LOWER" = "darwin" ]; then
     case "$ARCH" in
-        arm64)  ARCH="arm64" ;;
+        arm64) ARCH="arm64" ;;
         x86_64) ARCH="amd64" ;;
-        *)      echo -e "${RED}Unsupported macOS architecture: $ARCH${NC}" && exit 1 ;;
+        *) echo -e "${RED}Unsupported macOS architecture: $ARCH${NC}" && exit 1 ;;
     esac
 else
     case "$ARCH" in
         aarch64|arm64) ARCH="arm64" ;;
         armv7*|armv8*) ARCH="arm" ;;
-        x86_64)        ARCH="amd64" ;;
-        i386|i686)     ARCH="386" ;;
-        *)             echo -e "${RED}Unsupported Linux architecture: $ARCH${NC}" && exit 1 ;;
+        x86_64) ARCH="amd64" ;;
+        i386|i686)   ARCH="386" ;;
+        *) echo -e "${RED}Unsupported Linux architecture: $ARCH${NC}" && exit 1 ;;
     esac
 fi
 
@@ -73,7 +71,6 @@ LATEST_VERSION=$(curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPO}/ma
 # Check if already installed
 if [ -x "./${BINARY}" ]; then
     INSTALLED_VERSION=$("./${BINARY}" --version 2>/dev/null || echo "unknown")
-    
     if [ "${INSTALLED_VERSION}" = "${LATEST_VERSION}" ]; then
         echo -e "${GREEN}kolwarp is up to date (v${LATEST_VERSION}). Running...${NC}"
         exec ./"${BINARY}"
@@ -87,7 +84,6 @@ fi
 # Download
 echo -e "${CYAN}Downloading ${ARCHIVE}...${NC}"
 DOWNLOAD_URL="https://github.com/${GITHUB_REPO}/releases/latest/download/${ARCHIVE}"
-
 if ! curl -L -# -o "${ARCHIVE}" "${DOWNLOAD_URL}"; then
     echo -e "${RED}Failed to download. Please check your internet connection.${NC}"
     exit 1
@@ -99,19 +95,19 @@ if [ "$EXT" = "zip" ]; then
     if command -v unzip &>/dev/null; then
         unzip -q -o "${ARCHIVE}"
     else
-        python3 -c "import zipfile; zipfile.ZipFile('${ARCHIVE}').extractall('.')" 2>/dev/null || {
-            echo -e "${RED}unzip not found. Please install unzip.${NC}"
-            exit 1
-        }
+        python3 -c "import zipfile; zipfile.ZipFile('${ARCHIVE}').extractall('.')" 2>/dev/null || { echo -e "${RED}unzip not found. Please install unzip.${NC}" exit 1; }
     fi
 else
     tar xzf "${ARCHIVE}"
 fi
 
-# Move binary
-if [ -d "${BINARY}-${OS_LOWER}-${ARCH}" ]; then
-    mv "${BINARY}-${OS_LOWER}-${ARCH}/${BINARY}" . 2>/dev/null || true
-    rm -rf "${BINARY}-${OS_LOWER}-${ARCH}"
+EXTRACTED_TARGET="${BINARY}-${OS_LOWER}-${ARCH}"
+if [ -d "${EXTRACTED_TARGET}" ]; then
+    mv "${EXTRACTED_TARGET}/${BINARY}" . 2>/dev/null || true
+    rm -rf "${EXTRACTED_TARGET}"
+elif [ -f "${EXTRACTED_TARGET}" ]; then
+
+    mv "${EXTRACTED_TARGET}" "${BINARY}"
 fi
 
 # Cleanup
