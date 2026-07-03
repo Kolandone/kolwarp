@@ -64,21 +64,12 @@ fi
 
 ARCHIVE="${BINARY}-${OS_LOWER}-${ARCH}.${EXT}"
 
-# Get latest version
-echo -e "${CYAN}Checking for updates...${NC}"
-LATEST_VERSION=$(curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPO}/main/VERSION" 2>/dev/null || echo "1.0.0")
-
 # Check if already installed
 if [ -x "./${BINARY}" ]; then
-    INSTALLED_VERSION=$("./${BINARY}" --version 2>/dev/null || echo "unknown")
-    if [ "${INSTALLED_VERSION}" = "${LATEST_VERSION}" ]; then
-        echo -e "${GREEN}kolwarp is up to date (v${LATEST_VERSION}). Running...${NC}"
-        exec ./"${BINARY}"
-    else
-        echo -e "${YELLOW}Updating from v${INSTALLED_VERSION} to v${LATEST_VERSION}...${NC}"
-    fi
+    echo -e "${GREEN}kolwarp is already installed. Running...${NC}"
+    exec ./"${BINARY}"
 else
-    echo -e "${CYAN}Installing kolwarp v${LATEST_VERSION}...${NC}"
+    echo -e "${CYAN}Installing kolwarp...${NC}"
 fi
 
 # Download
@@ -101,12 +92,12 @@ else
     tar xzf "${ARCHIVE}"
 fi
 
+# Move and Rename binary
 EXTRACTED_TARGET="${BINARY}-${OS_LOWER}-${ARCH}"
 if [ -d "${EXTRACTED_TARGET}" ]; then
     mv "${EXTRACTED_TARGET}/${BINARY}" . 2>/dev/null || true
     rm -rf "${EXTRACTED_TARGET}"
 elif [ -f "${EXTRACTED_TARGET}" ]; then
-
     mv "${EXTRACTED_TARGET}" "${BINARY}"
 fi
 
